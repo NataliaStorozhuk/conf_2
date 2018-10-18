@@ -13,11 +13,10 @@ public class FileMap {
     ArrayList wordPositions;
     //индекс первого свободного элемента в последнем массиве
 
-    //вектор, сколько слово встерчается в этом тексте
-    private ArrayList<Integer> tf;
 
 
-    FileMap(Integer number, int wordpositions) {
+
+    FileMap(Integer number) {
         this.number = number;
         //добавляем в список массвов словопозиций
         this.wordPositions = new ArrayList();

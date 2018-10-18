@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Controller {
 
@@ -124,7 +125,10 @@ public class Controller {
     private void getIndexes() {
 
         // Это список исходных нормализованных с помощью алгоритма Портера лексем по каждому файлу
-        ArrayList<ArrayList<String>> listFiles = getLexemesFromFiles();
+        //'это можно будет убрать и заменить на файлы
+        ArrayList<FileJanr> listFiles = getLexemesFromFiles();
+
+      //  ArrayList<FileJanr> listFilesNew = getLexemesFromFilesNew();
 
         //формируем общий массив лексем, сортируем, выкидываем повторы
         List<String> lexemesList = getLexemesList(listFiles);
@@ -138,9 +142,12 @@ public class Controller {
             addTextToLabel(buf);
         }
 
+
+
     }
 
-    private HashMap getInvertIndexes(ArrayList<ArrayList<String>> listFiles, List<String> lexemesList) {
+
+    private HashMap getInvertIndexes(ArrayList<FileJanr> listFiles, List<String> lexemesList) {
 
         HashMap indexesMap = new HashMap();
 
@@ -150,9 +157,9 @@ public class Controller {
             //просматриваем все файлы по очереди
             for (int numberFile = 0; numberFile < listFiles.size(); numberFile++) {
                 //проходим по каждой лексеме файла
-                for (int wordPosition = 0; wordPosition < listFiles.get(numberFile).size(); wordPosition++) {
+                for (int wordPosition = 0; wordPosition < listFiles.get(numberFile).words.size(); wordPosition++) {
                     //текущее слово в файле
-                    String currentWord = listFiles.get(numberFile).get(wordPosition);
+                    String currentWord = listFiles.get(numberFile).words.get(wordPosition);
                     //если слово совпадает со словом в словаре
                     if (currentWord.equals(dictionaryWord)) {
                         addWordPosition(indexesMap, dictionaryWord, numberFile, wordPosition);
@@ -160,6 +167,7 @@ public class Controller {
                 }
             }
         }
+
         return indexesMap;
     }
 
@@ -196,22 +204,26 @@ public class Controller {
 
     private void addDocAndWordPosition(int j, int p, ArrayList<FileMap> temp) {
         FileMap fm;
-        fm = new FileMap(j, arraySize);
+        fm = new FileMap(j);
         fm.addWordPosition(p);
         temp.add(fm);
     }
 
-    private List<String> getLexemesList(ArrayList<ArrayList<String>> listFiles) {
-        Analyzer analyzer = new Analyzer();
-        List<String> arrayAfterSort = analyzer.getAllTokensArray(listFiles);
+    private List<String> getLexemesList(ArrayList<FileJanr> listFiles) {
+        ArrayList<String> arrayList = new ArrayList<>();
+        for (FileJanr listFile : listFiles) {
+            arrayList.addAll(listFile.words);
+
+        }
+          List<String> arrayAfterSort = arrayList.stream().distinct().sorted().collect(Collectors.toList());
         addTextToLabel("\n" + "Вектор лексем из файлов после фильтрации, сортировки, без повторов:\n");
         addTextToLabel(arrayAfterSort + ":\n");
         return arrayAfterSort;
     }
 
-    private ArrayList<ArrayList<String>> getLexemesFromFiles() {
+    private ArrayList<FileJanr> getLexemesFromFiles() {
         addTextToLabel("\nОбработка файлов\n");
-        ArrayList<ArrayList<String>> listFiles = new ArrayList<>(countFiles);
+        ArrayList<FileJanr> listFiles = new ArrayList<>(countFiles);
         for (int i = 0; i < countFiles; i++) {
 
             String filename = pathFile + "file_" + i + ".txt";
@@ -220,19 +232,24 @@ public class Controller {
                 addTextToLabel("\nСодержание файла " + filename + ":\n");
 
                 String s = Analyzer.usingBufferedReader(f.getPath());
-          //      addTextToLabel(s);
+                //      addTextToLabel(s);
 
-            //    addTextToLabel("После обработки:\n");
+                //    addTextToLabel("После обработки:\n");
                 ArrayList<String> newS = analyzer.getWordsFromString(s);
-              //  addTextToLabel(newS + "\n");
+                //  addTextToLabel(newS + "\n");
 
                 //addTextToLabel("После стемминга:\n");
                 ArrayList<String> afterPorter = analyzer.getWordsAfterPorter(newS);
-              //  addTextToLabel(afterPorter + "\n");
+                //  addTextToLabel(afterPorter + "\n");
 
+                //addTextToLabel("После удаления стоп слов:\n");
                 ArrayList<String> afterDeletingStopWords = analyzer.getWithoutStopWords(afterPorter);
+                //  addTextToLabel(afterDeletingStopWords + "\n");
 
-                listFiles.add(afterDeletingStopWords);
+                FileJanr fileJanr = new FileJanr(afterDeletingStopWords);
+
+                listFiles.add(fileJanr);
+
             } else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Файл отсутствует");

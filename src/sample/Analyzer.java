@@ -6,17 +6,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 class Analyzer {
 
-    List<String> getAllTokensArray(ArrayList<ArrayList<String>> array) {
+   /* List<String> getAllTokensArray(ArrayList<ArrayList<String>> array) {
         ArrayList<String> allArray = new ArrayList<>();
         for (ArrayList<String> anArray : array) allArray.addAll(anArray);
 
         return allArray.stream().distinct().sorted().collect(Collectors.toList());
-    }
+    }*/
 
     static String usingBufferedReader(String filePath) {
         StringBuilder contentBuilder = new StringBuilder();
