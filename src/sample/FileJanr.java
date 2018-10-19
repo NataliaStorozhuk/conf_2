@@ -1,6 +1,7 @@
 package sample;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -10,7 +11,10 @@ public class FileJanr {
     public Integer number;
 
     //вектор, в котором список появления слов из общего вектора
-    public ArrayList<Integer> tf;
+    public ArrayList<Integer> frequency;
+
+    //нормальизованная частота которая freq/ max freq
+    public ArrayList<Double> tf;
 
     //вектор, в котором список всех слов из этого файла
     public ArrayList<String> words;
@@ -22,8 +26,8 @@ public class FileJanr {
     }
 
 
-    public void setTf(TreeMap<String, ArrayList<FileMap>> indexesMap) {
-        this.tf = new ArrayList<Integer>();
+    public void setFrequency(TreeMap<String, ArrayList<FileMap>> indexesMap) {
+        this.frequency = new ArrayList<Integer>();
 
         for (Map.Entry<String, ArrayList<FileMap>> e : indexesMap.entrySet()) {
 
@@ -37,10 +41,20 @@ public class FileJanr {
                     break;
                 }
             }
-            tf.add(count);
+            frequency.add(count);
             //    System.out.println("ФАйл номер " + this.number + " слово " +e.getKey() + "число повторений " + count );
 
         }
 
+    }
+
+    public void setTf() {
+        this.tf = new ArrayList<Double>();
+        Integer max = Collections.max(this.frequency);
+        for (int i = 0; i < frequency.size(); i++) {
+            double d = ((double) frequency.get(i)) / (int) max;
+            this.tf.add(d);
+            System.out.println(this.tf.get(i));
+        }
     }
 }

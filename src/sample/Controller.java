@@ -142,8 +142,10 @@ public class Controller {
 
         for (int i=0; i<listFiles.size(); i++)
         {
-           listFiles.get(i).setTf(indexesMap);
-           System.out.println(listFiles.get(i).tf.toString());
+           listFiles.get(i).setFrequency(indexesMap);
+           System.out.println(listFiles.get(i).frequency.toString());
+            listFiles.get(i).setTf();
+            System.out.println(listFiles.get(i).tf.toString());
 
         }
 
