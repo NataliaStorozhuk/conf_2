@@ -14,16 +14,15 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class Controller {
 
     private Analyzer analyzer = new Analyzer();
-    private int countFiles = 10;
-    private int countWords = 100;
-    private int arraySize = 2;
+    private int countFiles = 3;
+    private int countWords = 10;
 
     private Stage stage;
     @FXML
@@ -40,12 +39,10 @@ public class Controller {
     @FXML
     public void initialize() {
         setOut.setAlignment(Pos.TOP_LEFT);
-        addTextToLabel("Номер варианта: 2 \n");
-        addTextToLabel("Схема хранения словопозиций: Гибридная\n ");
         addTextToLabel("Язык: Русский \n");
         addTextToLabel("Число файлов: " + countFiles + "\n");
         addTextToLabel("Число слов в файле: " + countWords + "\n");
-        addTextToLabel("Размер массива словопозиций: " + arraySize + "\n\n\n");
+
 
         getDoc.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
             setOut.setAlignment(Pos.TOP_LEFT);
@@ -132,24 +129,30 @@ public class Controller {
 
         //формируем общий массив лексем, сортируем, выкидываем повторы
         List<String> lexemesList = getLexemesList(listFiles);
+        System.out.println(lexemesList.toString());
 
         //тут ключ - это лексема, значение - объект класса FileMap
-        HashMap indexesMap = getInvertIndexes(listFiles, lexemesList);
-
+   //     TreeMap<String, ArrayList<FileMap>> indexesMap = getInvertIndexes(listFiles, lexemesList);
+        TreeMap<String, ArrayList<FileMap>> indexesMap = getInvertIndexes(listFiles, lexemesList);
         //выводим инвертированный индекс
         for (String anLexemesList : lexemesList) {
             String buf = getLexemasIndex(indexesMap, anLexemesList);
             addTextToLabel(buf);
         }
 
+        for (int i=0; i<listFiles.size(); i++)
+        {
+           listFiles.get(i).setTf(indexesMap);
+           System.out.println(listFiles.get(i).tf.toString());
 
+        }
 
     }
 
 
-    private HashMap getInvertIndexes(ArrayList<FileJanr> listFiles, List<String> lexemesList) {
+    private TreeMap<String, ArrayList<FileMap>> getInvertIndexes(ArrayList<FileJanr> listFiles, List<String> lexemesList) {
 
-        HashMap indexesMap = new HashMap();
+        TreeMap<String, ArrayList<FileMap>> indexesMap = new TreeMap<>();
 
         // проходим по списку лексем (словарю)
         for (String dictionaryWord : lexemesList) {
@@ -171,7 +174,7 @@ public class Controller {
         return indexesMap;
     }
 
-    private void addWordPosition(HashMap indexesMap, String dictionaryWord, int numberFile, int wordPosition) {
+    private void addWordPosition(TreeMap indexesMap, String dictionaryWord, int numberFile, int wordPosition) {
         //получаем список файлов этого слова
         ArrayList<FileMap> listDocs;
         listDocs = (ArrayList<FileMap>) indexesMap.get(dictionaryWord);
@@ -192,13 +195,14 @@ public class Controller {
                 addDocAndWordPosition(numberFile, wordPosition, listDocs);
             else updateDocInfo(wordPosition, listDocs, test, listDocs.get(test));
         } else addDocAndWordPosition(numberFile, wordPosition, listDocs);
-        indexesMap.put(dictionaryWord, listDocs);
+        indexesMap.replace(dictionaryWord, listDocs);
     }
 
     private void updateDocInfo(int p, ArrayList<FileMap> temp, int i, FileMap aTemp) {
         FileMap fm;
         fm = aTemp;
         fm.addWordPosition(p);
+   //     temp.set(i, fm);
         temp.set(i, fm);
     }
 
@@ -246,7 +250,7 @@ public class Controller {
                 ArrayList<String> afterDeletingStopWords = analyzer.getWithoutStopWords(afterPorter);
                 //  addTextToLabel(afterDeletingStopWords + "\n");
 
-                FileJanr fileJanr = new FileJanr(afterDeletingStopWords);
+                FileJanr fileJanr = new FileJanr(i, afterDeletingStopWords);
 
                 listFiles.add(fileJanr);
 
@@ -264,7 +268,7 @@ public class Controller {
         return listFiles;
     }
 
-    private String getLexemasIndex(HashMap<String, ArrayList<FileMap>> hm, String anLexemesList) {
+    private String getLexemasIndex(TreeMap<String, ArrayList<FileMap>> hm, String anLexemesList) {
         StringBuilder s = new StringBuilder();
         s.append("\n\n").append(anLexemesList).append(": ");
         ArrayList<FileMap> fm = hm.get(anLexemesList);

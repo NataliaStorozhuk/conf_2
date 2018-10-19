@@ -14,8 +14,6 @@ public class FileMap {
     //индекс первого свободного элемента в последнем массиве
 
 
-
-
     FileMap(Integer number) {
         this.number = number;
         //добавляем в список массвов словопозиций
@@ -26,7 +24,4 @@ public class FileMap {
         wordPositions.add(p);
     }
 
-    void getTf(ArrayList<String> tf) {
-
-    }
 }
