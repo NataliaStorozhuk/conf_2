@@ -160,6 +160,17 @@ public class Controller {
 
         }
 
+        ArrayList<Double> getAverageW = new ArrayList<>();
+        for (int i = 0; i < indexesMap.size(); i++) {
+          Double wAverage = 0.0;
+          Double temp = 0.0;
+            for (int j = 0; j < listFiles.size(); j++) {
+                temp+=listFiles.get(j).w.get(i);
+            }
+            wAverage  = temp/countFiles;
+            getAverageW.add(wAverage);
+        }
+        System.out.println(getAverageW.toString());
     }
 
     private ArrayList<Double> getIdf(Integer N, TreeMap<String, ArrayList<FileMap>> treeMap) {
@@ -236,7 +247,6 @@ public class Controller {
         FileMap fm;
         fm = aTemp;
         fm.addWordPosition(p);
-        //     temp.set(i, fm);
         temp.set(i, fm);
     }
 

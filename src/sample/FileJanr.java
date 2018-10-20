@@ -66,13 +66,12 @@ public class FileJanr {
             Double temp = getW(tf.get(i), frequency.get(i));
             w.add(temp);
         }
-
   //      System.out.println(w);
     }
 
     //рассчет по формуле
     private Double getW(Double tf, Double idf) {
-        Double temp = 0.5*tf*idf;
+        Double temp = (0.5+0.5*tf)*idf;
         return  temp;
     }
 }
