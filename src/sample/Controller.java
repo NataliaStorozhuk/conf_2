@@ -151,7 +151,14 @@ public class Controller {
         }
 
         ArrayList<Double> getIdf = getIdf(countFiles, indexesMap);
+        System.out.println(getIdf.toString());
 
+        for (int i = 0; i < listFiles.size(); i++) {
+
+            listFiles.get(i).setW(getIdf);
+            System.out.println(listFiles.get(i).w.toString());
+
+        }
 
     }
 
@@ -173,7 +180,7 @@ public class Controller {
 
         }
 
-        System.out.println(idf);
+   //     System.out.println(idf);
         return idf;
     }
 
