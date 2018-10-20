@@ -5,7 +5,8 @@ import java.util.ArrayList;
 public class SimCalc {
 
 
-    private Double getCos(ArrayList<Double> wQ, ArrayList<Double> wDocs, Double getSkalar) {
+    private static Double getCos(ArrayList<Double> wQ, ArrayList<Double> wDocs) {
+        Double getSkalar = getSkalar(wQ, wDocs);
         Double getCos = 0.0;
         Double getChisl = Math.sqrt(getSkalar);
         Double getZnam = 0.0;
@@ -28,7 +29,7 @@ public class SimCalc {
         return getCos;
     }
 
-    private Double getManhetten(ArrayList<Double> wQ, ArrayList<Double> wDocs) {
+    private static Double getManhetten(ArrayList<Double> wQ, ArrayList<Double> wDocs) {
         Double getManhetten = 0.0;
 
         for (int i = 0; i < wQ.size(); i++) {
@@ -38,7 +39,7 @@ public class SimCalc {
         return getManhetten;
     }
 
-    private Double getEvklid(ArrayList<Double> wQ, ArrayList<Double> wDocs) {
+    private static Double getEvklid(ArrayList<Double> wQ, ArrayList<Double> wDocs) {
         Double getEvklid = 0.0;
         Double getSum = 0.0;
 
@@ -47,12 +48,11 @@ public class SimCalc {
         }
         getEvklid = Math.sqrt(getSum);
 
-        System.out.println("getSum=" + getSum);
         System.out.println("getEvklid=" + getEvklid);
         return getEvklid;
     }
 
-    private Double getSkalar(ArrayList<Double> wQ, ArrayList<Double> wDocs) {
+    private static Double getSkalar(ArrayList<Double> wQ, ArrayList<Double> wDocs) {
         Double getSkalar = 0.0;
         Integer сountPairs = 0;
 
@@ -62,9 +62,29 @@ public class SimCalc {
                 сountPairs++;
         }
 
-        System.out.println("skalar=" + getSkalar);
-        System.out.println("pair=" + сountPairs);
+        System.out.println("getSkalar=" + getSkalar);
         return getSkalar;
     }
 
+    public static CompareResults getCompareResults(ArrayList<Double> wQ, ArrayList<Double> wDocs) {
+        //получаем скалярное произведение
+        Double getSkalar = getSkalar(wQ, wDocs);
+
+        //получаем эвклидово
+        Double getEvklid = getEvklid(wQ, wDocs);
+
+        //получаем манхеттенское
+
+        Double getManhetten = getManhetten(wQ, wDocs);
+
+        //получаем косинусное
+        Double getCos = getCos(wQ, wDocs);
+
+        CompareResults compareResults = new CompareResults();
+        compareResults.skalar = getSkalar;
+        compareResults.cos = getCos;
+        compareResults.evkl = getEvklid;
+        compareResults.manh = getManhetten;
+        return compareResults;
+    }
 }

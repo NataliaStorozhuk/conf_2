@@ -24,7 +24,7 @@ public class Controller {
 
     private Analyzer analyzer = new Analyzer();
     private int countFiles = 4;
-    private int countWords = 10;
+    private int countWords = 100;
 
     private Stage stage;
     @FXML
@@ -152,12 +152,13 @@ public class Controller {
         //тут ключ - это лексема, значение - объект класса FileMap
         //     TreeMap<String, ArrayList<FileMap>> indexesMap = getInvertIndexes(listFiles, lexemesList);
         TreeMap<String, ArrayList<FileMap>> indexesMap = getInvertIndexes(listFiles, lexemesList);
+
         //выводим инвертированный индекс
-        for (String anLexemesList : lexemesList) {
+   /*     for (String anLexemesList : lexemesList) {
             String buf = getLexemasIndex(indexesMap, anLexemesList);
             addTextToLabel(buf);
         }
-
+*/
         for (FileJanr listFile : listFiles) {
             listFile.setFrequency(indexesMap);
             System.out.println(listFile.frequency.toString());
@@ -179,7 +180,8 @@ public class Controller {
 
         ArrayList<Double> averageW = getAverageW(listFiles, indexesMap);
 
-
+        CompareResults compareResults = SimCalc.getCompareResults(listFiles.get(0).w, averageW);
+        System.out.println(compareResults.toString());
     }
 
     private ArrayList<Double> getAverageW(ArrayList<FileJanr> listFiles, TreeMap<String, ArrayList<FileMap>> indexesMap) {
