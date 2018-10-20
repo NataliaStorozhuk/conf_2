@@ -11,10 +11,12 @@ import javafx.stage.Stage;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -125,14 +127,14 @@ public class Controller {
         //'это можно будет убрать и заменить на файлы
         ArrayList<FileJanr> listFiles = getLexemesFromFiles();
 
-      //  ArrayList<FileJanr> listFilesNew = getLexemesFromFilesNew();
+        //  ArrayList<FileJanr> listFilesNew = getLexemesFromFilesNew();
 
         //формируем общий массив лексем, сортируем, выкидываем повторы
         List<String> lexemesList = getLexemesList(listFiles);
         System.out.println(lexemesList.toString());
 
         //тут ключ - это лексема, значение - объект класса FileMap
-   //     TreeMap<String, ArrayList<FileMap>> indexesMap = getInvertIndexes(listFiles, lexemesList);
+        //     TreeMap<String, ArrayList<FileMap>> indexesMap = getInvertIndexes(listFiles, lexemesList);
         TreeMap<String, ArrayList<FileMap>> indexesMap = getInvertIndexes(listFiles, lexemesList);
         //выводим инвертированный индекс
         for (String anLexemesList : lexemesList) {
@@ -140,17 +142,40 @@ public class Controller {
             addTextToLabel(buf);
         }
 
-        for (int i=0; i<listFiles.size(); i++)
-        {
-           listFiles.get(i).setFrequency(indexesMap);
-           System.out.println(listFiles.get(i).frequency.toString());
+        for (int i = 0; i < listFiles.size(); i++) {
+            listFiles.get(i).setFrequency(indexesMap);
+            System.out.println(listFiles.get(i).frequency.toString());
             listFiles.get(i).setTf();
             System.out.println(listFiles.get(i).tf.toString());
 
         }
 
+        ArrayList<Double> getIdf = getIdf(countFiles, indexesMap);
+
+
     }
 
+    private ArrayList<Double> getIdf(Integer N, TreeMap<String, ArrayList<FileMap>> treeMap) {
+        ArrayList<Double> idf = new ArrayList<>();
+
+        for(Map.Entry<String, ArrayList<FileMap>> item : treeMap.entrySet()){
+
+       //     System.out.printf("Key: %d  Value: %s \n", item.getKey(), item.getValue());
+
+            Integer countDocs = item.getValue().size();
+
+            BigDecimal bdCountDocs = new BigDecimal(countDocs);
+            BigDecimal bdN = new BigDecimal(N);
+            BigDecimal arg = bdN.divide(bdCountDocs, 8, BigDecimal.ROUND_HALF_EVEN);
+            double log = Math.log(arg.doubleValue());
+
+            idf.add(log);
+
+        }
+
+        System.out.println(idf);
+        return idf;
+    }
 
     private TreeMap<String, ArrayList<FileMap>> getInvertIndexes(ArrayList<FileJanr> listFiles, List<String> lexemesList) {
 
@@ -204,7 +229,7 @@ public class Controller {
         FileMap fm;
         fm = aTemp;
         fm.addWordPosition(p);
-   //     temp.set(i, fm);
+        //     temp.set(i, fm);
         temp.set(i, fm);
     }
 
@@ -221,7 +246,7 @@ public class Controller {
             arrayList.addAll(listFile.words);
 
         }
-          List<String> arrayAfterSort = arrayList.stream().distinct().sorted().collect(Collectors.toList());
+        List<String> arrayAfterSort = arrayList.stream().distinct().sorted().collect(Collectors.toList());
         addTextToLabel("\n" + "Вектор лексем из файлов после фильтрации, сортировки, без повторов:\n");
         addTextToLabel(arrayAfterSort + ":\n");
         return arrayAfterSort;
