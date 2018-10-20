@@ -23,12 +23,12 @@ import java.util.stream.Collectors;
 public class Controller {
 
     private Analyzer analyzer = new Analyzer();
-    private int countFiles = 3;
+    private int countFiles = 4;
     private int countWords = 10;
 
     private Stage stage;
     @FXML
-    private Button getDoc, getIndex, deleteFolder, cleanLabel;
+    private Button getDoc, getIndex, deleteFolder, cleanLabel, getQ;
 
     @FXML
     private Label setOut;
@@ -51,7 +51,6 @@ public class Controller {
             final FileChooser fileChooser = new FileChooser();
             File file = fileChooser.showOpenDialog(stage);
             if (file != null) {
-
                 try {
                     getFiles(file);
                 } catch (IOException e) {
@@ -60,6 +59,16 @@ public class Controller {
             }
         });
         getIndex.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> getIndexes());
+
+        getQ.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+            setOut.setAlignment(Pos.TOP_LEFT);
+            final FileChooser fileChooser = new FileChooser();
+            File file = fileChooser.showOpenDialog(stage);
+            if (file != null) {
+                getRequest(file);
+            }
+        });
+    //    getQ.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> getRequest());
         deleteFolder.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
             try {
                 deleteFolder();
@@ -73,6 +82,13 @@ public class Controller {
             alert.showAndWait();
         });
         cleanLabel.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> setOut.setText(null));
+    }
+
+    private void getRequest(File file) {
+
+        File f = new File(file.getPath());
+        FileJanr fileQ = getFileJanr(-1, file.getName(), f);
+
     }
 
     private void deleteFolder() throws IOException {
@@ -142,43 +158,52 @@ public class Controller {
             addTextToLabel(buf);
         }
 
-        for (int i = 0; i < listFiles.size(); i++) {
-            listFiles.get(i).setFrequency(indexesMap);
-            System.out.println(listFiles.get(i).frequency.toString());
-            listFiles.get(i).setTf();
-            System.out.println(listFiles.get(i).tf.toString());
+        for (FileJanr listFile : listFiles) {
+            listFile.setFrequency(indexesMap);
+            System.out.println(listFile.frequency.toString());
+            listFile.setTf();
+            System.out.println(listFile.tf.toString());
 
         }
 
         ArrayList<Double> getIdf = getIdf(countFiles, indexesMap);
+        System.out.println("Idf");
         System.out.println(getIdf.toString());
 
-        for (int i = 0; i < listFiles.size(); i++) {
-
-            listFiles.get(i).setW(getIdf);
-            System.out.println(listFiles.get(i).w.toString());
+        for (FileJanr listFile : listFiles) {
+            listFile.setW(getIdf);
+            System.out.println("W");
+            System.out.println(listFile.w.toString());
 
         }
+
+        ArrayList<Double> averageW = getAverageW(listFiles, indexesMap);
+
+
+    }
+
+    private ArrayList<Double> getAverageW(ArrayList<FileJanr> listFiles, TreeMap<String, ArrayList<FileMap>> indexesMap) {
 
         ArrayList<Double> getAverageW = new ArrayList<>();
         for (int i = 0; i < indexesMap.size(); i++) {
-          Double wAverage = 0.0;
-          Double temp = 0.0;
-            for (int j = 0; j < listFiles.size(); j++) {
-                temp+=listFiles.get(j).w.get(i);
+            Double wAverage;
+            Double temp = 0.0;
+            //берем не все, а только от 1, чтоб первый документ - как бы запрос
+            for (int j = 1; j < listFiles.size(); j++) {
+                temp += listFiles.get(j).w.get(i);
             }
-            wAverage  = temp/countFiles;
+            wAverage = temp / (countFiles-1);
             getAverageW.add(wAverage);
         }
+        System.out.println("Средние частоты");
         System.out.println(getAverageW.toString());
+        return getAverageW;
     }
 
     private ArrayList<Double> getIdf(Integer N, TreeMap<String, ArrayList<FileMap>> treeMap) {
         ArrayList<Double> idf = new ArrayList<>();
 
-        for(Map.Entry<String, ArrayList<FileMap>> item : treeMap.entrySet()){
-
-       //     System.out.printf("Key: %d  Value: %s \n", item.getKey(), item.getValue());
+        for (Map.Entry<String, ArrayList<FileMap>> item : treeMap.entrySet()) {
 
             Integer countDocs = item.getValue().size();
 
@@ -190,8 +215,7 @@ public class Controller {
             idf.add(log);
 
         }
-
-   //     System.out.println(idf);
+        //     System.out.println(idf);
         return idf;
     }
 
@@ -277,25 +301,7 @@ public class Controller {
             String filename = pathFile + "file_" + i + ".txt";
             File f = new File(filename);
             if (f.exists()) {
-                addTextToLabel("\nСодержание файла " + filename + ":\n");
-
-                String s = Analyzer.usingBufferedReader(f.getPath());
-                //      addTextToLabel(s);
-
-                //    addTextToLabel("После обработки:\n");
-                ArrayList<String> newS = analyzer.getWordsFromString(s);
-                //  addTextToLabel(newS + "\n");
-
-                //addTextToLabel("После стемминга:\n");
-                ArrayList<String> afterPorter = analyzer.getWordsAfterPorter(newS);
-                //  addTextToLabel(afterPorter + "\n");
-
-                //addTextToLabel("После удаления стоп слов:\n");
-                ArrayList<String> afterDeletingStopWords = analyzer.getWithoutStopWords(afterPorter);
-                //  addTextToLabel(afterDeletingStopWords + "\n");
-
-                FileJanr fileJanr = new FileJanr(i, afterDeletingStopWords);
-
+                FileJanr fileJanr = getFileJanr(i, filename, f);
                 listFiles.add(fileJanr);
 
             } else {
@@ -310,6 +316,27 @@ public class Controller {
         }
 
         return listFiles;
+    }
+
+    private FileJanr getFileJanr(int i, String filename, File f) {
+        addTextToLabel("\nСодержание файла " + filename + ":\n");
+
+        String s = Analyzer.usingBufferedReader(f.getPath());
+        //      addTextToLabel(s);
+
+        //    addTextToLabel("После обработки:\n");
+        ArrayList<String> newS = analyzer.getWordsFromString(s);
+        //  addTextToLabel(newS + "\n");
+
+        //addTextToLabel("После стемминга:\n");
+        ArrayList<String> afterPorter = analyzer.getWordsAfterPorter(newS);
+        //  addTextToLabel(afterPorter + "\n");
+
+        //addTextToLabel("После удаления стоп слов:\n");
+        ArrayList<String> afterDeletingStopWords = analyzer.getWithoutStopWords(afterPorter);
+        //  addTextToLabel(afterDeletingStopWords + "\n");
+
+        return new FileJanr(i, afterDeletingStopWords);
     }
 
     private String getLexemasIndex(TreeMap<String, ArrayList<FileMap>> hm, String anLexemesList) {

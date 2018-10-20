@@ -7,12 +7,12 @@
 
 <AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="750.0" minWidth="800" prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
     <Button fx:id="getDoc" layoutX="20.0" layoutY="14.0" mnemonicParsing="false" prefHeight="43.5" prefWidth="160.0" text="Сформировать документ" />
-    <Button fx:id="getIndex" layoutX="200.0" layoutY="14.0" mnemonicParsing="false" prefHeight="43.5" prefWidth="160.0" text="Получить индексы" />
-    <Button fx:id="deleteFolder" layoutX="380.0" layoutY="14.0" mnemonicParsing="false" prefHeight="43.5" prefWidth="160.0" text="Очистить папку" />
+    <Button fx:id="getQ" layoutX="197.0" layoutY="14.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="95.0" text="Тест" />
+    <Button fx:id="getIndex" layoutX="300.0" layoutY="14.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="95.0" text="5 документов" />
+    <Button fx:id="deleteFolder" layoutX="419.0" layoutY="14.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="121.0" text="Очистить папку" />
     <Button fx:id="cleanLabel" layoutX="560.0" layoutY="14.0" mnemonicParsing="false" prefHeight="43.5" prefWidth="160.0" text="Очистить поле вывода" />
 
     <ScrollPane layoutX="20.0" layoutY="70.0" prefHeight="650.0" prefWidth="750.0">
-        <Label fx:id="setOut" layoutX="20.0" layoutY="70.0" prefHeight="1500000" prefWidth="745"
-               wrapText="true"/>
+        <Label fx:id="setOut" layoutX="20.0" layoutY="70.0" prefHeight="1500000" prefWidth="745" wrapText="true" />
     </ScrollPane>
 </AnchorPane>

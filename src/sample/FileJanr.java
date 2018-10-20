@@ -33,7 +33,7 @@ public class FileJanr {
 
         for (Map.Entry<String, ArrayList<FileMap>> e : indexesMap.entrySet()) {
 
-        //    System.out.println(e.getKey() + " " + e.getValue());
+            //    System.out.println(e.getKey() + " " + e.getValue());
 
             ArrayList<FileMap> fileMaps = e.getValue();
             Integer count = 0;
@@ -56,22 +56,21 @@ public class FileJanr {
         for (int i = 0; i < frequency.size(); i++) {
             double d = ((double) frequency.get(i)) / (int) max;
             this.tf.add(d);
-         //  System.out.println(this.tf.get(i));
+            //  System.out.println(this.tf.get(i));
         }
     }
 
     public void setW(ArrayList<Double> frequency) {
         w = new ArrayList<Double>();
-        for (int i=0; i<tf.size(); i++){
+        for (int i = 0; i < tf.size(); i++) {
             Double temp = getW(tf.get(i), frequency.get(i));
             w.add(temp);
         }
-  //      System.out.println(w);
     }
 
     //рассчет по формуле
     private Double getW(Double tf, Double idf) {
-        Double temp = (0.5+0.5*tf)*idf;
-        return  temp;
+        Double temp = (0.5 + 0.5 * tf) * idf;
+        return temp;
     }
 }
