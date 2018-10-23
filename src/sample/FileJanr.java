@@ -10,6 +10,10 @@ public class FileJanr {
     //number - номер файла
     public Integer number;
 
+    public long duration;
+    public Integer countWords;
+    public Integer countAfterPorter;
+
     //вектор, в котором список появления слов из общего вектора
     public ArrayList<Integer> frequency;
 
@@ -22,9 +26,13 @@ public class FileJanr {
     //w
     public ArrayList<Double> w;
 
-    public FileJanr(int i, ArrayList<String> afterDeletingStopWords) {
+    public FileJanr(int i, ArrayList<String> afterDeletingStopWords,Integer countWords,    Integer countAfterPorter, long duration
+                 ) {
         this.number = i;
         this.words = afterDeletingStopWords;
+        this.duration = duration;
+        this.countWords = countWords;
+        this.countAfterPorter = countAfterPorter;
     }
 
 

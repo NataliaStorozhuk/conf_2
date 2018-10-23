@@ -5,14 +5,57 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="750.0" minWidth="800" prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
-    <Button fx:id="getDoc" layoutX="20.0" layoutY="14.0" mnemonicParsing="false" prefHeight="43.5" prefWidth="160.0" text="Сформировать документ" />
-    <Button fx:id="getQ" layoutX="197.0" layoutY="14.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="95.0" text="Тест" />
-    <Button fx:id="getIndex" layoutX="300.0" layoutY="14.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="95.0" text="5 документов" />
-    <Button fx:id="deleteFolder" layoutX="419.0" layoutY="14.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="121.0" text="Очистить папку" />
-    <Button fx:id="cleanLabel" layoutX="560.0" layoutY="14.0" mnemonicParsing="false" prefHeight="43.5" prefWidth="160.0" text="Очистить поле вывода" />
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="750.0" minWidth="600" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+    <Button fx:id="getDoc" layoutX="20.0" layoutY="14.0" mnemonicParsing="false" prefHeight="43.5" prefWidth="160.0" text="Сформировать документ" visible="false" />
+    <Button fx:id="getQ" layoutX="200.0" layoutY="14.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="95.0" text="Тест" visible="false" />
+    <Button fx:id="getIndex" layoutX="349.0" layoutY="14.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="150.0" text="Необходимый жанр" />
+    <Button fx:id="anotherGenre" layoutX="560.0" layoutY="14.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="150.0" text="Другой жанр" />
+    <Button fx:id="deleteFolder" layoutX="419.0" layoutY="14.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="121.0" text="Очистить папку" visible="false" />
+    <Button fx:id="cleanLabel" layoutX="560.0" layoutY="14.0" mnemonicParsing="false" prefHeight="43.5" prefWidth="160.0" text="Очистить поле вывода" visible="false" />
 
-    <ScrollPane layoutX="20.0" layoutY="70.0" prefHeight="650.0" prefWidth="750.0">
-        <Label fx:id="setOut" layoutX="20.0" layoutY="70.0" prefHeight="1500000" prefWidth="745" wrapText="true" />
+    <Label layoutX="199.0" layoutY="27.0" text="Исходный текст" />
+
+    <Label layoutX="20.0" layoutY="68.0" prefHeight="34.0" prefWidth="125.0" text="Жанр" />
+    <Label layoutX="20.0" layoutY="99.0" prefHeight="34.0" prefWidth="125.0" text="Среднее число лексем, шт." wrapText="true" />
+    <Label layoutX="20.0" layoutY="142.0" prefHeight="34.0" prefWidth="125.0" text="Число лексем после стоп - слов, шт." wrapText="true" />
+    <Label layoutX="20.0" layoutY="186.0" prefHeight="34.0" prefWidth="125.0" text="Длительность обработки, милисек." wrapText="true" />
+
+    <Label fx:id="name1" layoutX="200" layoutY="68.0" text="Детектив" />
+    <Label fx:id="countLex1" layoutX="200.0" layoutY="99.0" text="" />
+    <Label fx:id="countStop1" layoutX="200.0" layoutY="142.0" text="" />
+    <Label fx:id="durabilityStem1" layoutX="201.0" layoutY="186.0" text="" />
+
+    <Label fx:id="name2" layoutX="400" layoutY="68.0" text="Детектив" />
+    <Label fx:id="countLex2" layoutX="400" layoutY="90.0" />
+    <Label fx:id="countStop2" layoutX="400" layoutY="142.0" />
+    <Label fx:id="durabilityStem2" layoutX="400" layoutY="186.0" />
+
+    <Label fx:id="name3" layoutX="600" layoutY="68.0" text="Любовный роман" />
+    <Label fx:id="countLex3" layoutX="600" layoutY="90.0" />
+    <Label fx:id="countStop3" layoutX="600" layoutY="142.0" />
+    <Label fx:id="durabilityStem3" layoutX="600" layoutY="186.0" />
+
+    <Label layoutX="20.0" layoutY="250.0" prefHeight="34.0" prefWidth="125.0" text="Скалярное произведение" wrapText="true" />
+    <Label layoutX="20.0" layoutY="293.0" prefHeight="34.0" prefWidth="125.0" text="Манхеттенское расстояние" wrapText="true" />
+    <Label layoutX="20.0" layoutY="332.0" prefHeight="34.0" prefWidth="125.0" text="Косинусная мера сходства" wrapText="true" />
+    <Label layoutX="20.0" layoutY="372.0" prefHeight="24.0" prefWidth="125.0" text="Евклидово расстояние" wrapText="true" />
+    <Label layoutX="20.0" layoutY="408.0" prefHeight="34.0" prefWidth="125.0" text="Длительность вычислений, милисек." wrapText="true" />
+
+
+    <Label fx:id="skalar1" layoutX="400.0" layoutY="250.0" />
+    <Label fx:id="manh1" layoutX="400.0" layoutY="293.0" />
+    <Label fx:id="cos1" layoutX="400.0" layoutY="332.0" />
+    <Label fx:id="evkl1" layoutX="400.0" layoutY="372.0" />
+    <Label fx:id="durability1" layoutX="400.0" layoutY="408.0" />
+
+    <Label fx:id="skalar2" layoutX="600.0" layoutY="250.0" />
+    <Label fx:id="manh2" layoutX="600.0" layoutY="293.0" />
+    <Label fx:id="cos2" layoutX="600.0" layoutY="332.0" />
+    <Label fx:id="evkl2" layoutX="600.0" layoutY="372.0" />
+    <Label fx:id="durability2" layoutX="600.0" layoutY="408.0" />
+
+
+    <ScrollPane layoutX="20.0" layoutY="70.0" prefHeight="650.0" prefWidth="750.0" visible="false">
+        <Label fx:id="setOut" layoutX="20.0" layoutY="70.0" prefHeight="1499803.0" prefWidth="522.0" visible="false" wrapText="true" />
     </ScrollPane>
 </AnchorPane>

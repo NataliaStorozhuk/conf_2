@@ -23,17 +23,27 @@ import java.util.stream.Collectors;
 public class Controller {
 
     private Analyzer analyzer = new Analyzer();
-    private int countFiles = 4;
+    private int countFiles = 5;
     private int countWords = 100;
 
     private Stage stage;
     @FXML
-    private Button getDoc, getIndex, deleteFolder, cleanLabel, getQ;
+    private Button getDoc, getIndex, deleteFolder, cleanLabel, getQ, anotherGenre;
+
+
+    @FXML
+    private Label name1, name2, name3, name4, countLex1, countLex2, countLex3, countLex4,
+            countStop1, countStop2, countStop3, countStop4, durabilityStem1, durabilityStem2,
+            durabilityStem3, durabilityStem4;
+    @FXML
+    private Label skalar1, cos1, evkl1, manh1, durability1,
+            skalar2, cos2, evkl2, manh2, durability2;
 
     @FXML
     private Label setOut;
 
-    private String pathFile = "C:\\Users\\Natalia\\Desktop\\temp\\";
+    private String pathDetFile = "C:\\Users\\Natalia\\Desktop\\tempDet\\";
+    private String pathAnotherFile = "C:\\Users\\Natalia\\Desktop\\tempAnother\\";
 
     public Controller() {
     }
@@ -58,7 +68,8 @@ public class Controller {
                 }
             }
         });
-        getIndex.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> getIndexes());
+        getIndex.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> processingNormal());
+        anotherGenre.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> processingAnother());
 
         getQ.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
             setOut.setAlignment(Pos.TOP_LEFT);
@@ -68,7 +79,7 @@ public class Controller {
                 getRequest(file);
             }
         });
-    //    getQ.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> getRequest());
+        //    getQ.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> getRequest());
         deleteFolder.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
             try {
                 deleteFolder();
@@ -92,12 +103,12 @@ public class Controller {
     }
 
     private void deleteFolder() throws IOException {
-        FileUtils.deleteDirectory(pathFile);
+        FileUtils.deleteDirectory(pathDetFile);
     }
 
     private void addTextToLabel(String s) {
-        System.out.println(s);
-        setOut.setText(setOut.getText() + s);
+     /*   System.out.println(s);
+        setOut.setText(setOut.getText() + s);*/
     }
 
     private void getFiles(File file) throws IOException {
@@ -112,7 +123,7 @@ public class Controller {
 
         addTextToLabel("\n" + countFiles + " файлов по " + countWords + " cлов:\n");
 
-        Files.createDirectories(Paths.get(pathFile));
+        Files.createDirectories(Paths.get(pathDetFile));
         //пишем 100 файлов
         for (int i = 0; i < countFiles; i++) {
 
@@ -123,7 +134,7 @@ public class Controller {
                 buf.append(newS.get(j)).append(" ");
             }
 
-            String filename = pathFile + "file_" + i + ".txt";
+            String filename = pathDetFile + "file_ (" + i + ").txt";
 
             try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(filename), "utf-8"))) {
@@ -137,14 +148,38 @@ public class Controller {
         }
     }
 
-    private void getIndexes() {
+    private void processingNormal() {
 
         // Это список исходных нормализованных с помощью алгоритма Портера лексем по каждому файлу
         //'это можно будет убрать и заменить на файлы
-        ArrayList<FileJanr> listFiles = getLexemesFromFiles();
+        ArrayList<FileJanr> listFiles = getLexemesFromFiles(pathDetFile);
+        CompareResults compareResults = processing(listFiles);
 
-        //  ArrayList<FileJanr> listFilesNew = getLexemesFromFilesNew();
+        evkl1.setText(compareResults.evkl.toString());
+        manh1.setText(compareResults.manh.toString());
+        skalar1.setText(compareResults.skalar.toString());
+        cos1.setText(compareResults.cos.toString());
+        durability1.setText(compareResults.durability.toString());
 
+    }
+
+    private void processingAnother() {
+
+        // Это список исходных нормализованных с помощью алгоритма Портера лексем по каждому файлу
+        //'это можно будет убрать и заменить на файлы
+        ArrayList<FileJanr> listFiles = getLexemesFromFiles(pathAnotherFile);
+        CompareResults compareResults = processing(listFiles);
+
+        evkl2.setText(compareResults.evkl.toString());
+        manh2.setText(compareResults.manh.toString());
+        skalar2.setText(compareResults.skalar.toString());
+        cos2.setText(compareResults.cos.toString());
+        durability2.setText(compareResults.durability.toString());
+
+    }
+
+    private CompareResults processing(ArrayList<FileJanr> listFiles) {
+        long start = System.currentTimeMillis();
         //формируем общий массив лексем, сортируем, выкидываем повторы
         List<String> lexemesList = getLexemesList(listFiles);
         System.out.println(lexemesList.toString());
@@ -153,23 +188,16 @@ public class Controller {
         //     TreeMap<String, ArrayList<FileMap>> indexesMap = getInvertIndexes(listFiles, lexemesList);
         TreeMap<String, ArrayList<FileMap>> indexesMap = getInvertIndexes(listFiles, lexemesList);
 
-        //выводим инвертированный индекс
-   /*     for (String anLexemesList : lexemesList) {
-            String buf = getLexemasIndex(indexesMap, anLexemesList);
-            addTextToLabel(buf);
-        }
-*/
         for (FileJanr listFile : listFiles) {
             listFile.setFrequency(indexesMap);
             System.out.println(listFile.frequency.toString());
             listFile.setTf();
             System.out.println(listFile.tf.toString());
-
         }
 
         ArrayList<Double> getIdf = getIdf(countFiles, indexesMap);
-        System.out.println("Idf");
-        System.out.println(getIdf.toString());
+        //    System.out.println("Idf");
+        //   System.out.println(getIdf.toString());
 
         for (FileJanr listFile : listFiles) {
             listFile.setW(getIdf);
@@ -181,7 +209,12 @@ public class Controller {
         ArrayList<Double> averageW = getAverageW(listFiles, indexesMap);
 
         CompareResults compareResults = SimCalc.getCompareResults(listFiles.get(0).w, averageW);
-        System.out.println(compareResults.toString());
+
+        long finish = System.currentTimeMillis();
+        long timeConsumedMillis = finish - start;
+
+        compareResults.durability = timeConsumedMillis;
+        return compareResults;
     }
 
     private ArrayList<Double> getAverageW(ArrayList<FileJanr> listFiles, TreeMap<String, ArrayList<FileMap>> indexesMap) {
@@ -194,7 +227,7 @@ public class Controller {
             for (int j = 1; j < listFiles.size(); j++) {
                 temp += listFiles.get(j).w.get(i);
             }
-            wAverage = temp / (countFiles-1);
+            wAverage = temp / (countFiles - 1);
             getAverageW.add(wAverage);
         }
         System.out.println("Средние частоты");
@@ -295,15 +328,21 @@ public class Controller {
         return arrayAfterSort;
     }
 
-    private ArrayList<FileJanr> getLexemesFromFiles() {
+    private ArrayList<FileJanr> getLexemesFromFiles(String path) {
         addTextToLabel("\nОбработка файлов\n");
         ArrayList<FileJanr> listFiles = new ArrayList<>(countFiles);
+        Integer countWords = 0;
+        Integer countAfterPorter = 0;
+        long duration = 0;
         for (int i = 0; i < countFiles; i++) {
 
-            String filename = pathFile + "file_" + i + ".txt";
+            String filename = path + "file_ (" + i + ").txt";
             File f = new File(filename);
             if (f.exists()) {
                 FileJanr fileJanr = getFileJanr(i, filename, f);
+                countWords += fileJanr.countWords;
+                countAfterPorter += fileJanr.countAfterPorter;
+                duration += fileJanr.duration;
                 listFiles.add(fileJanr);
 
             } else {
@@ -316,13 +355,27 @@ public class Controller {
                 break;
             }
         }
+        countLex1.setText(listFiles.get(0).countWords.toString());
+        countStop1.setText(listFiles.get(0).countAfterPorter.toString());
+        durabilityStem1.setText(String.valueOf(listFiles.get(0).duration));
+
+        if (path == pathAnotherFile) {
+            countLex3.setText(countWords.toString());
+            countStop3.setText(countAfterPorter.toString());
+            durabilityStem3.setText(String.valueOf(duration));
+        } else {
+            countLex2.setText(countWords.toString());
+            countStop2.setText(countAfterPorter.toString());
+            durabilityStem2.setText(String.valueOf(duration));
+        }
+
 
         return listFiles;
     }
 
     private FileJanr getFileJanr(int i, String filename, File f) {
-        addTextToLabel("\nСодержание файла " + filename + ":\n");
-
+        // addTextToLabel("\nСодержание файла " + filename + ":\n");
+        long start = System.currentTimeMillis();
         String s = Analyzer.usingBufferedReader(f.getPath());
         //      addTextToLabel(s);
 
@@ -337,8 +390,9 @@ public class Controller {
         //addTextToLabel("После удаления стоп слов:\n");
         ArrayList<String> afterDeletingStopWords = analyzer.getWithoutStopWords(afterPorter);
         //  addTextToLabel(afterDeletingStopWords + "\n");
-
-        return new FileJanr(i, afterDeletingStopWords);
+        long finish = System.currentTimeMillis();
+        long timeConsumedMillis = finish - start;
+        return new FileJanr(i, afterDeletingStopWords, newS.size(), afterPorter.size(), timeConsumedMillis);
     }
 
     private String getLexemasIndex(TreeMap<String, ArrayList<FileMap>> hm, String anLexemesList) {

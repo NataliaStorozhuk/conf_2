@@ -17,8 +17,8 @@ public class Main extends Application {
         Controller controller = loader.getController();
         controller.setStageAndSetupListeners(primaryStage);
 
-        primaryStage.setTitle("ПОСТРОЕНИЕ ИНВЕРТИРОВАННОГО ИНДЕКСА И СЛОВАРЯ");
-        primaryStage.setScene(new Scene(root, 800, 650));
+        primaryStage.setTitle("Определение показателей схожести документа");
+        primaryStage.setScene(new Scene(root, 800, 500));
         primaryStage.show();
 
 
